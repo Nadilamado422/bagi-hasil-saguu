@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Web Penentuan Bagi Hasil Usaha Sagu Tumang di Hurnala, Tulehu</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 font-sans">
+  <div class="container mx-auto px-4 py-8">
+    <h2 class="text-3xl font-bold text-green-700 mb-2">Web Penentuan Bagi Hasil pada Usaha Pembuatan Sagu Tumang</h2>
+    <h3 class="text-xl font-medium text-gray-600 mb-6">Dusun Hurnala, Desa Tulehu</h3>
+
+    <div id="form-container" class="space-y-4"></div>
+    <button onclick="tambahMitra()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Tambah Mitra</button>
+
+    <div class="mt-6">
+      <label class="block text-gray-700">Total Keuntungan (Rp):</label>
+      <input type="number" id="keuntungan" class="mt-1 block w-64 px-4 py-2 border border-gray-300 rounded shadow-sm focus:ring focus:ring-green-200" />
+    </div>
+    <button onclick="hitungBagiHasil()" class="mt-4 bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">Hitung Bagi Hasil</button>
+
+    <div id="hasil" class="mt-6"></div>
+  </div>
+
+  <script>
+    let mitraCount = 0;
+
+    function tambahMitra() {
+      const container = document.getElementById("form-container");
+      const div = document.createElement("div");
+      div.className = "p-4 bg-white rounded shadow";
+      div.innerHTML = `
+        <div class="grid md:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-gray-700">Nama Mitra:</label>
+            <input type="text" id="nama${mitraCount}" class="mt-1 w-full px-4 py-2 border rounded" />
+          </div>
+          <div>
+            <label class="block text-gray-700">Modal (Rp):</label>
+            <input type="number" id="modal${mitraCount}" class="mt-1 w-full px-4 py-2 border rounded" />
+          </div>
+          <div>
+            <label class="block text-gray-700">Tenaga (0-100):</label>
+            <input type="number" id="tenaga${mitraCount}" class="mt-1 w-full px-4 py-2 border rounded" />
+</div>
+        </div>
+      `;
+      container.appendChild(div);
+      mitraCount++;
+    }
+
+    function hitungBagiHasil() {
+      const keuntungan = parseFloat(document.getElementById("keuntungan").value);
+      const mitra = [];
+      for (let i = 0; i < mitraCount; i++) {
+        const nama = document.getElementById(nama${i}).value;
+        const modal = parseFloat(document.getElementById(modal${i}).value) || 0;
+        const tenaga = parseFloat(document.getElementById(tenaga${i}).value) || 0;
+        mitra.push({ nama, modal, tenaga });
+      }
+
+      const totalModal = mitra.reduce((sum, m) => sum + m.modal, 0);
+      const totalTenaga = mitra.reduce((sum, m) => sum + m.tenaga, 0);
+
+      let hasilHTML = `
+        <h3 class="text-xl font-semibold text-gray-800 mb-4">Hasil Pembagian:</h3>
+        <div class="overflow-x-auto">
+          <table class="min-w-full bg-white border border-gray-200 rounded shadow">
+            <thead class="bg-gray-100">
+              <tr>
+<th class="px-4 py-2 border">Nama</th>
+                <th class="px-4 py-2 border">Bagian Modal</th>
+                <th class="px-4 py-2 border">Bagian Tenaga</th>
+                <th class="px-4 py-2 border">Total</th>
+              </tr>
+            </thead>
+            <tbody>`;
+
+      mitra.forEach(m => {
+        const propModal = totalModal ? m.modal / totalModal : 0;
+        const propTenaga = totalTenaga ? m.tenaga / totalTenaga : 0;
+        const bagianModal = 0.6 * keuntungan * propModal;
+        const bagianTenaga = 0.4 * keuntungan * propTenaga;
+        const total = bagianModal + bagianTenaga;
+        hasilHTML += `
+              <tr>
+                <td class="px-4 py-2 border">${m.nama}</td>
+                <td class="px-4 py-2 border">Rp ${bagianModal.toFixed(2)}</td>
+                <td class="px-4 py-2 border">Rp ${bagianTenaga.toFixed(2)}</td>
+                <td class="px-4 py-2 border font-semibold">Rp ${total.toFixed(2)}</td>
+              </tr>`;
+      });
+
+      hasilHTML += </tbody></table></div>;
+      document.getElementById("hasil").innerHTML = hasilHTML;
+    }
+  </script>
+</body>
+</html>
